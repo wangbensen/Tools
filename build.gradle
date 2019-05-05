@@ -1,0 +1,62 @@
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath "gradle.plugin.com.arenagod.gradle:mybatis-generator-plugin:1.4"
+  }
+}
+
+//指定编译的编码
+tasks.withType(JavaCompile) {
+  options.encoding = "UTF-8"
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'maven-publish'
+group 'vx.tools.mybatis.generator'
+version '0.1-SNAPSHOT'
+jar {
+  baseName = 'vx.tools.mybatis.generator'
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+  maven { url "https://plugins.gradle.org/m2/" }
+  maven { url "http://maven.aliyun.com/mvn/repository/" }
+  mavenCentral()
+}
+
+dependencies {
+  compile('gradle.plugin.com.arenagod.gradle:mybatis-generator-plugin:1.4')
+  compile('org.mybatis.generator:mybatis-generator-core:1.3.5')
+  compile('org.apache.commons:commons-lang3:3.6')
+}
+
+ext{
+  mavenReleases = "http://10.240.212.209:8080/repository/maven-releases/"
+  mavenSnapshot = "http://10.240.212.209:8080/repository/maven-snapshots"
+  userName = "admin"
+  pwd = "admin123"
+}
+
+//上传到nexus
+//uploadArchives {
+//  repositories {
+//    mavenDeployer {
+//      repository(url: "${mavenReleases}") {
+//        authentication(userName: "${userName}", password: "${pwd}")
+//      }
+//      snapshotRepository(url: "${mavenSnapshot}") {
+//        authentication(userName: "${userName}", password: "${pwd}")
+//      }
+//      pom.version = "0.1-SNAPSHOT"
+//      pom.artifactId = "$archivesBaseName"
+//      pom.groupId = "$project.group"
+//    }
+//  }
+//}

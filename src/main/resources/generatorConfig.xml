@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+
+<!-- 引入配置文件 -->
+<!-- 指定数据连接驱动jar地址 -->
+<classPathEntry location="d:\\mysql-connector-java-5.1.6.jar" />
+
+<context id="DB2Tables"  targetRuntime="MyBatis3">
+	<!-- 设置编码为UTF-8 -->
+	<property name="javaFileEncoding" value="UTF-8"/>
+	<!--配置生成注释，默认注释已经修改 -->
+	<property name="suppressAllComments" value="false"/>
+	<plugin type="com.vx.tools.mybatis.generator.plugins.MybatisExtendPlugin">
+		<property name="lockColumn" value="record_version"/>
+		<property name="additionColumns" value="warehouse_id"/>
+		<property name="excludeUpdateColumns" value="warehouse_id,warehouse_code"/>
+	</plugin>
+	<commentGenerator type="com.vx.tools.mybatis.generator.plugins.MybatisDefaultCommentGenerator"/>
+	<!--数据库链接URL，用户名、密码 -->
+	<jdbcConnection driverClass="com.mysql.jdbc.Driver"
+					connectionURL="jdbc:mysql://10.240.212.35:3306/wbs_fxhg"
+					userId="vkapp"
+					password="Vanke2018@.">
+	</jdbcConnection>
+	<javaTypeResolver>
+		<property name="forceBigDecimals" value="false"/>
+	</javaTypeResolver>
+	<!-- 生成模型的包名和位置-->
+	<javaModelGenerator targetPackage="com.vx.test.entity" targetProject="src/main/java">
+		<property name="enableSubPackages" value="true"/>
+		<property name="trimStrings" value="true"/>
+	</javaModelGenerator>
+	<!-- 生成映射文件的包名和位置-->
+	<sqlMapGenerator targetPackage="com.vx.test.mapper" targetProject="src/main/java">
+		<property name="enableSubPackages" value="true"/>
+	</sqlMapGenerator>
+	<!-- 生成DAO的包名和位置-->
+	<javaClientGenerator type="XMLMAPPER" targetPackage="com.vx.test.repository" targetProject="src/main/java">
+		<property name="enableSubPackages" value="true"/>
+	</javaClientGenerator>
+	<!-- 要生成的表 tableName是数据库中的表名或视图名 domainObjectName是实体类名-->
+	<table tableName="base_bar_card" domainObjectName="BaseBarCard" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+		<!--生成生成主键的方法，主键回写-->
+		<generatedKey column="base_bar_card_id" sqlStatement="JDBC"/>
+	</table>
+</context>
+</generatorConfiguration>
+
