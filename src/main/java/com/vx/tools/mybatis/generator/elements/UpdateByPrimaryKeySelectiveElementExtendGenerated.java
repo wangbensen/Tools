@@ -49,7 +49,7 @@ public class UpdateByPrimaryKeySelectiveElementExtendGenerated extends AbstractX
             }
             XmlElement isNotNullElement = new XmlElement("if");
             sb.setLength(0);
-            sb.append(introspectedColumn.getJavaProperty());
+            sb.append("record." + introspectedColumn.getJavaProperty());
             sb.append(" != null");
             isNotNullElement.addAttribute(new Attribute("test", sb.toString()));
             dynamicElement.addElement(isNotNullElement);
