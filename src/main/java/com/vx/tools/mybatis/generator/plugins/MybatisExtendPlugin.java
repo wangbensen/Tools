@@ -21,8 +21,15 @@ import java.util.Properties;
 
 public class MybatisExtendPlugin extends PluginAdapter {
 
+    //乐观锁字段
     private String lockColumn = "";
+    //逻辑删除字段
+    private String logicDeleteColumn = "";
+    //模糊查询字段
+    private List<String> selectLikeColumns = new ArrayList<>();
+    //附加字段
     private List<String> additionColumns = new ArrayList<>();
+    //排除更新字段
     private List<String> excludeUpdateColumns = new ArrayList<>();
 
     @Override
@@ -32,6 +39,10 @@ public class MybatisExtendPlugin extends PluginAdapter {
         if(lockColumn != null && lockColumn.trim().length() >= 0){
             this.lockColumn = lockColumn;
         }
+        String logicDeleteColumn = getProperties().getProperty("logicDeleteColumn");
+        if(logicDeleteColumn != null && logicDeleteColumn.trim().length() >= 0){
+            this.logicDeleteColumn = logicDeleteColumn;
+        }
         String additionColumns = getProperties().getProperty("additionColumns");
         if(additionColumns != null && additionColumns.trim().length() >= 0){
             this.additionColumns.addAll(Arrays.asList(StringUtils.split(additionColumns, ",")));
@@ -39,6 +50,10 @@ public class MybatisExtendPlugin extends PluginAdapter {
         String excludeUpdateColumns = getProperties().getProperty("excludeUpdateColumns");
         if(excludeUpdateColumns != null && excludeUpdateColumns.trim().length() >= 0){
             this.excludeUpdateColumns.addAll(Arrays.asList(StringUtils.split(excludeUpdateColumns, ",")));
+        }
+        String selectLikeColumns = getProperties().getProperty("selectLikeColumns");
+        if(selectLikeColumns != null && selectLikeColumns.trim().length() >= 0){
+            this.selectLikeColumns.addAll(Arrays.asList(StringUtils.split(selectLikeColumns, ",")));
         }
     }
 
@@ -102,6 +117,7 @@ public class MybatisExtendPlugin extends PluginAdapter {
         if(additionColumns.size() > 0){
             SelectByPrimaryKeyElementExtendGenerated elementGenerator = new SelectByPrimaryKeyElementExtendGenerated();
             elementGenerator.setWhereColumns(additionColumns);
+            elementGenerator.setLogicDeleteColumn(logicDeleteColumn);
             elementGenerator.setContext(context);
             elementGenerator.setIntrospectedTable(introspectedTable);
             elementGenerator.addElements(element);
@@ -187,7 +203,9 @@ public class MybatisExtendPlugin extends PluginAdapter {
         MybatisExtendXmlElementGenerator elementGenerator = new MybatisExtendXmlElementGenerator();
         elementGenerator.setWhereColumns(additionColumns);
         elementGenerator.setExcludeUpdateColumns(excludeUpdateColumns);
+        elementGenerator.setSelectLikeColumns(selectLikeColumns);
         elementGenerator.setLockColumn(lockColumn);
+        elementGenerator.setLogicDeleteColumn(logicDeleteColumn);
         elementGenerator.setContext(context);
         elementGenerator.setIntrospectedTable(introspectedTable);
         elementGenerator.addElements(document.getRootElement());
@@ -199,6 +217,8 @@ public class MybatisExtendPlugin extends PluginAdapter {
         MybatisExtendMethodGenerator methodGenerator = new MybatisExtendMethodGenerator(true);
         methodGenerator.setWhereColumns(additionColumns);
         methodGenerator.setLockColumn(lockColumn);
+        methodGenerator.setLogicDeleteColumn(logicDeleteColumn);
+        methodGenerator.setSelectLikeColumns(selectLikeColumns);
         methodGenerator.setContext(context);
         methodGenerator.setIntrospectedTable(introspectedTable);
         methodGenerator.addInterfaceElements(interfaze);

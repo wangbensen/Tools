@@ -15,7 +15,13 @@ public class MybatisExtendMethodGenerator extends AbstractJavaMapperMethodGenera
 
     private boolean isSimple;
     private String lockColumn = "";
+    private String logicDeleteColumn = "";
+    private List<String> selectLikeColumns = new ArrayList<>();
     private List<String> whereColumns = new ArrayList<>();
+
+    public void setLogicDeleteColumn(String logicDeleteColumn) {
+        this.logicDeleteColumn = logicDeleteColumn;
+    }
 
     public void setWhereColumns(List<String> whereColumns) {
         this.whereColumns = whereColumns;
@@ -23,6 +29,10 @@ public class MybatisExtendMethodGenerator extends AbstractJavaMapperMethodGenera
 
     public void setLockColumn(String lockColumn) {
         this.lockColumn = lockColumn;
+    }
+
+    public void setSelectLikeColumns(List<String> selectLikeColumns) {
+        this.selectLikeColumns = selectLikeColumns;
     }
 
     public MybatisExtendMethodGenerator(boolean isSimple) {

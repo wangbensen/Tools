@@ -17,9 +17,14 @@ import static org.mybatis.generator.internal.util.StringUtility.stringHasValue;
 public class SelectByPrimaryKeyElementExtendGenerated extends AbstractXmlElementGenerator {
 
     private List<String> whereColumns = new ArrayList<>();
+    private String logicDeleteColumn = "";
 
     public void setWhereColumns(List<String> whereColumns) {
         this.whereColumns = whereColumns;
+    }
+
+    public void setLogicDeleteColumn(String logicDeleteColumn) {
+        this.logicDeleteColumn = logicDeleteColumn;
     }
 
     @Override
@@ -70,6 +75,9 @@ public class SelectByPrimaryKeyElementExtendGenerated extends AbstractXmlElement
             sb.append(MyBatis3FormattingUtilities.getParameterClause(introspectedColumn));
             elements.add(new TextElement(sb.toString()));
         }
+
+        //逻辑删除字段
+        elements.add(new TextElement(" and " + logicDeleteColumn + " = 1 "));
 
         //添加where附加条件
         for (IntrospectedColumn introspectedColumn : ListUtilities.removeGeneratedAlwaysColumns(introspectedTable.getNonPrimaryKeyColumns())) {

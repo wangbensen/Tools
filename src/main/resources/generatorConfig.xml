@@ -12,6 +12,8 @@
 	<!--配置生成注释，默认注释已经修改 -->
 	<property name="suppressAllComments" value="false"/>
 	<plugin type="com.vx.tools.mybatis.generator.plugins.MybatisExtendPlugin">
+		<property name="selectLikeColumns" value="warehouse_code"/>
+		<property name="logicDeleteColumn" value="valid"/>
 		<property name="lockColumn" value="record_version"/>
 		<property name="additionColumns" value="warehouse_id"/>
 		<property name="excludeUpdateColumns" value="warehouse_id,warehouse_code"/>

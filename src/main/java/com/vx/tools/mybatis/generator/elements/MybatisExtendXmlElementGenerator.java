@@ -17,6 +17,8 @@ import java.util.List;
 public class MybatisExtendXmlElementGenerator extends AbstractXmlElementGenerator {
 
     private String lockColumn = "";
+    private String logicDeleteColumn = "";
+    private List<String> selectLikeColumns = new ArrayList<>();
     private List<String> whereColumns = new ArrayList<>();
     private List<String> excludeUpdateColumns = new ArrayList<>();
 
@@ -32,6 +34,14 @@ public class MybatisExtendXmlElementGenerator extends AbstractXmlElementGenerato
         this.lockColumn = lockColumn;
     }
 
+    public void setLogicDeleteColumn(String logicDeleteColumn) {
+        this.logicDeleteColumn = logicDeleteColumn;
+    }
+
+    public void setSelectLikeColumns(List<String> selectLikeColumns) {
+        this.selectLikeColumns = selectLikeColumns;
+    }
+
     @Override
     public void addElements(XmlElement parentElement) {
         addSelectOneElement(parentElement);
@@ -39,6 +49,42 @@ public class MybatisExtendXmlElementGenerator extends AbstractXmlElementGenerato
         addSelectPageElement(parentElement);
         if(lockColumn != null && lockColumn.trim().length() > 0){
             addUpdateByPrimaryKeySelectiveLockElement(parentElement, lockColumn);
+        }
+    }
+
+    private void setWhereAllColumns(StringBuilder sb, XmlElement selectTrimElement){
+        for (IntrospectedColumn introspectedColumn : introspectedTable.getAllColumns()) {
+            String escapedColumnName = MyBatis3FormattingUtilities.getEscapedColumnName(introspectedColumn);
+            //逻辑删除字段
+            if(escapedColumnName.equalsIgnoreCase(logicDeleteColumn)){
+                selectTrimElement.addElement(new TextElement(" and " + logicDeleteColumn + " = 1 "));
+            }else{
+                XmlElement selectNotNullElement = new XmlElement("if");
+                sb.setLength(0);
+                String property = (whereColumns.size() > 0 ? "record." : "") + introspectedColumn.getJavaProperty();
+                sb.append(property);
+                if(introspectedColumn.getFullyQualifiedJavaType().getFullyQualifiedName().equals(String.class.getName())){
+                    sb.append(" != null and ");
+                    sb.append(property);
+                    sb.append(".trim().length() > 0");
+                }else{
+                    sb.append(" != null ");
+                }
+                selectNotNullElement.addAttribute(new Attribute("test", sb.toString()));
+                sb.setLength(0);
+                sb.append(" and ");
+                if(introspectedColumn.getFullyQualifiedJavaType().getFullyQualifiedName().equals(String.class.getName())
+                        && selectLikeColumns.contains(escapedColumnName)){
+                    sb.append(" INSTR("+escapedColumnName+","+
+                            MyBatis3FormattingUtilities.getParameterClause(introspectedColumn, whereColumns.size() > 0 ? "record." : "")+") > 0");
+                }else{
+                    sb.append(escapedColumnName);
+                    sb.append(" = ");
+                    sb.append(MyBatis3FormattingUtilities.getParameterClause(introspectedColumn, whereColumns.size() > 0 ? "record." : ""));
+                }
+                selectNotNullElement.addElement(new TextElement(sb.toString()));
+                selectTrimElement.addElement(selectNotNullElement);
+            }
         }
     }
 
@@ -81,26 +127,13 @@ public class MybatisExtendXmlElementGenerator extends AbstractXmlElementGenerato
 
         answer.addElement(selectTrimElement);
         //循环所有的列
-        for (IntrospectedColumn introspectedColumn : introspectedTable.getAllColumns()) {
-            XmlElement selectNotNullElement = new XmlElement("if");
-            sb.setLength(0);
-            sb.append((whereColumns.size() > 0 ? "record." : "") + introspectedColumn.getJavaProperty());
-            sb.append(" != null ");
-            selectNotNullElement.addAttribute(new Attribute("test", sb.toString()));
-            sb.setLength(0);
-            sb.append(" and ");
-            sb.append(MyBatis3FormattingUtilities.getEscapedColumnName(introspectedColumn));
-            sb.append(" = ");
-            sb.append(MyBatis3FormattingUtilities.getParameterClause(introspectedColumn, whereColumns.size() > 0 ? "record." : ""));
-            selectNotNullElement.addElement(new TextElement(sb.toString()));
-            selectTrimElement.addElement(selectNotNullElement);
-        }
+        setWhereAllColumns(sb, selectTrimElement);
 
         //添加where附加条件
         for (IntrospectedColumn introspectedColumn : ListUtilities.removeGeneratedAlwaysColumns(introspectedTable.getNonPrimaryKeyColumns())) {
             String escapedColumnName = MyBatis3FormattingUtilities.getEscapedColumnName(introspectedColumn);
             if(whereColumns.contains(escapedColumnName)){
-                answer.addElement(new TextElement("and " + escapedColumnName + " = " + MyBatis3FormattingUtilities.getParameterClause(introspectedColumn)));
+                selectTrimElement.addElement(new TextElement("and " + escapedColumnName + " = " + MyBatis3FormattingUtilities.getParameterClause(introspectedColumn)));
             }
         }
 
@@ -148,25 +181,45 @@ public class MybatisExtendXmlElementGenerator extends AbstractXmlElementGenerato
 
         //循环所有的列
         for (IntrospectedColumn introspectedColumn : introspectedTable.getAllColumns()) {
-            XmlElement selectNotNullElement = new XmlElement("if");
-            sb.setLength(0);
-            sb.append("record."+introspectedColumn.getJavaProperty());
-            sb.append(" != null ");
-            selectNotNullElement.addAttribute(new Attribute("test", sb.toString()));
-            sb.setLength(0);
-            sb.append(" and ");
-            sb.append(MyBatis3FormattingUtilities.getEscapedColumnName(introspectedColumn));
-            sb.append(" = ");
-            sb.append((MyBatis3FormattingUtilities.getParameterClause(introspectedColumn, "record.")));
-            selectNotNullElement.addElement(new TextElement(sb.toString()));
-            selectTrimElement.addElement(selectNotNullElement);
+            String escapedColumnName = MyBatis3FormattingUtilities.getEscapedColumnName(introspectedColumn);
+            //逻辑删除字段
+            if(escapedColumnName.equalsIgnoreCase(logicDeleteColumn)){
+                selectTrimElement.addElement(new TextElement(" and " + logicDeleteColumn + " = 1 "));
+            }else{
+                XmlElement selectNotNullElement = new XmlElement("if");
+                sb.setLength(0);
+                String property = "record."+introspectedColumn.getJavaProperty();
+                sb.append(property);
+                if(introspectedColumn.getFullyQualifiedJavaType().getFullyQualifiedName().equals(String.class.getName())){
+                    sb.append(" != null and ");
+                    sb.append(property);
+                    sb.append(".trim().length() > 0");
+                }else{
+                    sb.append(" != null ");
+                }
+                selectNotNullElement.addAttribute(new Attribute("test", sb.toString()));
+                sb.setLength(0);
+                sb.append(" and ");
+                if(introspectedColumn.getFullyQualifiedJavaType().getFullyQualifiedName().equals(String.class.getName())
+                        && selectLikeColumns.contains(escapedColumnName)){
+                    sb.append(" INSTR("+escapedColumnName+","+
+                            MyBatis3FormattingUtilities.getParameterClause(introspectedColumn, "record.")+") > 0");
+                }else{
+                    sb.append(escapedColumnName);
+                    sb.append(" = ");
+                    sb.append(MyBatis3FormattingUtilities.getParameterClause(introspectedColumn, "record."));
+                }
+                selectNotNullElement.addElement(new TextElement(sb.toString()));
+                selectTrimElement.addElement(selectNotNullElement);
+            }
+
         }
 
         //添加where附加条件
         for (IntrospectedColumn introspectedColumn : ListUtilities.removeGeneratedAlwaysColumns(introspectedTable.getNonPrimaryKeyColumns())) {
             String escapedColumnName = MyBatis3FormattingUtilities.getEscapedColumnName(introspectedColumn);
             if(whereColumns.contains(escapedColumnName)){
-                answer.addElement(new TextElement("and " + escapedColumnName + " = " + MyBatis3FormattingUtilities.getParameterClause(introspectedColumn)));
+                selectTrimElement.addElement(new TextElement("and " + escapedColumnName + " = " + MyBatis3FormattingUtilities.getParameterClause(introspectedColumn)));
             }
         }
 
@@ -235,26 +288,13 @@ public class MybatisExtendXmlElementGenerator extends AbstractXmlElementGenerato
 
         answer.addElement(selectTrimElement);
         //循环所有的列
-        for (IntrospectedColumn introspectedColumn : introspectedTable.getAllColumns()) {
-            XmlElement selectNotNullElement = new XmlElement("if");
-            sb.setLength(0);
-            sb.append((whereColumns.size() > 0 ? "record." : "") + introspectedColumn.getJavaProperty());
-            sb.append(" != null ");
-            selectNotNullElement.addAttribute(new Attribute("test", sb.toString()));
-            sb.setLength(0);
-            sb.append(" and ");
-            sb.append(MyBatis3FormattingUtilities.getEscapedColumnName(introspectedColumn));
-            sb.append(" = ");
-            sb.append(MyBatis3FormattingUtilities.getParameterClause(introspectedColumn, whereColumns.size() > 0 ? "record." : ""));
-            selectNotNullElement.addElement(new TextElement(sb.toString()));
-            selectTrimElement.addElement(selectNotNullElement);
-        }
+        setWhereAllColumns(sb, selectTrimElement);
 
         //添加where附加条件
         for (IntrospectedColumn introspectedColumn : ListUtilities.removeGeneratedAlwaysColumns(introspectedTable.getNonPrimaryKeyColumns())) {
             String escapedColumnName = MyBatis3FormattingUtilities.getEscapedColumnName(introspectedColumn);
             if(whereColumns.contains(escapedColumnName)){
-                answer.addElement(new TextElement("and " + escapedColumnName + " = " + MyBatis3FormattingUtilities.getParameterClause(introspectedColumn)));
+                selectTrimElement.addElement(new TextElement("and " + escapedColumnName + " = " + MyBatis3FormattingUtilities.getParameterClause(introspectedColumn)));
             }
         }
 
