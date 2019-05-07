@@ -3,6 +3,7 @@ package com.vx.tools.mybatis.generator.plugins;
 import com.vx.tools.mybatis.generator.elements.*;
 import com.vx.tools.mybatis.generator.method.MybatisExtendMethodGenerator;
 import org.apache.commons.lang3.StringUtils;
+import org.mybatis.generator.api.GeneratedXmlFile;
 import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.PluginAdapter;
@@ -14,13 +15,15 @@ import org.mybatis.generator.api.dom.xml.Document;
 import org.mybatis.generator.api.dom.xml.XmlElement;
 import org.mybatis.generator.codegen.mybatis3.MyBatis3FormattingUtilities;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
 public class MybatisExtendPlugin extends PluginAdapter {
-
+    //xml是否覆盖
+    private Boolean xmlMergeable = false;
     //乐观锁字段
     private String lockColumn = "";
     //逻辑删除字段
@@ -54,6 +57,10 @@ public class MybatisExtendPlugin extends PluginAdapter {
         String selectLikeColumns = getProperties().getProperty("selectLikeColumns");
         if(selectLikeColumns != null && selectLikeColumns.trim().length() >= 0){
             this.selectLikeColumns.addAll(Arrays.asList(StringUtils.split(selectLikeColumns, ",")));
+        }
+        String xmlMergeable = getProperties().getProperty("xmlMergeable");
+        if(xmlMergeable != null && xmlMergeable.trim().length() >= 0){
+            this.xmlMergeable = Boolean.getBoolean(xmlMergeable);
         }
     }
 
@@ -223,5 +230,19 @@ public class MybatisExtendPlugin extends PluginAdapter {
         methodGenerator.setIntrospectedTable(introspectedTable);
         methodGenerator.addInterfaceElements(interfaze);
         return super.clientGenerated(interfaze, topLevelClass, introspectedTable);
+    }
+
+    @Override
+    public boolean sqlMapGenerated(GeneratedXmlFile sqlMap, IntrospectedTable introspectedTable) {
+        if(!xmlMergeable){
+            try{
+                Field field = sqlMap.getClass().getDeclaredField("isMergeable");
+                field.setAccessible(true);
+                field.setBoolean(sqlMap,false);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return super.sqlMapGenerated(sqlMap, introspectedTable);
     }
 }
