@@ -1,0 +1,46 @@
+// The Maven plugin adds support for deploying artifacts to Maven repositories.
+// 一个可以让你把库上传到maven仓库的插件
+apply plugin: 'maven'
+// The signing plugin adds the ability to digitally sign built files and artifacts. These digital signatures can then be used to prove who built the artifact the signature is attached to as well as other information such as when the signature was generated.
+// 对库文件进行数字签名的插件,可以通过签名知道谁创建了这个库文件,签名的时间等等信息
+apply plugin: 'signing'
+
+ext {
+    POM_GROUP_ID = "vx.tools"
+    POM_ARTIFACT_ID = "vx.tools.mybatis.generator"
+    POM_VERSION_ID = '0.1-SNAPSHOT'
+    POM_USER_NAME = 'admin'
+    POM_USER_PASSWORD = 'admin123'
+}
+
+// 声明变量记录maven库地址
+def mavenRepositoryUrl
+// 判断是发布到正式库,还是snapshots库
+if (!POM_VERSION_ID.contains("SNAPSHOT")) {
+    println 'RELEASE BUILD'
+    // 下面的库地址指向的是我们私有仓库的Releases 仓库
+    mavenRepositoryUrl = "http://10.240.212.209:8080/repository/maven-releases/"
+} else {
+    println 'SNAPSHOTS BUILD'
+    // 下面的库地址指向的是我们私有仓库的snapshots 仓库
+    mavenRepositoryUrl = "http://10.240.212.209:8080/repository/maven-snapshots/"
+}
+
+afterEvaluate { project ->
+    // 我们声明我们要执行的上传到maven的task
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                // 这样就类似坐标的方式定位到了制定的库文件
+                pom.artifactId = POM_ARTIFACT_ID
+                pom.groupId = POM_GROUP_ID
+                pom.version = POM_VERSION_ID
+
+                // 授权验证,这里也就是你登陆搭建的私服服务器时候的用户名\密码
+                repository(url: mavenRepositoryUrl) {
+                    authentication(userName: POM_USER_NAME, password: POM_USER_PASSWORD)
+                }
+            }
+        }
+    }
+}

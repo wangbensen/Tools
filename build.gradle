@@ -16,9 +16,8 @@ tasks.withType(JavaCompile) {
 
 apply plugin: 'java'
 apply plugin: 'idea'
-apply plugin: 'maven-publish'
+apply from: 'maven_push.gradle'
 group 'vx.tools.mybatis.generator'
-version '0.1-SNAPSHOT'
 jar {
   baseName = 'vx.tools.mybatis.generator'
 }
