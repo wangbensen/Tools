@@ -35,27 +35,3 @@ dependencies {
   compile('org.mybatis.generator:mybatis-generator-core:1.3.5')
   compile('org.apache.commons:commons-lang3:3.6')
 }
-
-ext{
-  mavenReleases = "http://10.240.212.209:8080/repository/maven-releases/"
-  mavenSnapshot = "http://10.240.212.209:8080/repository/maven-snapshots"
-  userName = "admin"
-  pwd = "admin123"
-}
-
-//上传到nexus
-//uploadArchives {
-//  repositories {
-//    mavenDeployer {
-//      repository(url: "${mavenReleases}") {
-//        authentication(userName: "${userName}", password: "${pwd}")
-//      }
-//      snapshotRepository(url: "${mavenSnapshot}") {
-//        authentication(userName: "${userName}", password: "${pwd}")
-//      }
-//      pom.version = "0.1-SNAPSHOT"
-//      pom.artifactId = "$archivesBaseName"
-//      pom.groupId = "$project.group"
-//    }
-//  }
-//}

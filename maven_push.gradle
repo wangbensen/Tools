@@ -8,7 +8,7 @@ apply plugin: 'signing'
 ext {
     POM_GROUP_ID = "vx.tools"
     POM_ARTIFACT_ID = "vx.tools.mybatis.generator"
-    POM_VERSION_ID = '0.1-SNAPSHOT'
+    POM_VERSION_ID = '0.5-RELEASE'
     POM_USER_NAME = 'admin'
     POM_USER_PASSWORD = 'admin123'
 }
