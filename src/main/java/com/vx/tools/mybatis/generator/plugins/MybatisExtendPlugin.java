@@ -99,13 +99,11 @@ public class MybatisExtendPlugin extends PluginAdapter {
 
     @Override
     public boolean sqlMapDeleteByPrimaryKeyElementGenerated(XmlElement element, IntrospectedTable introspectedTable) {
-        if(additionColumns.size() > 0){
-            DeleteByPrimaryKeyElementExtendGenerated elementGenerator = new DeleteByPrimaryKeyElementExtendGenerated();
-            elementGenerator.setWhereColumns(additionColumns);
-            elementGenerator.setContext(context);
-            elementGenerator.setIntrospectedTable(introspectedTable);
-            elementGenerator.addElements(element);
-        }
+        DeleteByPrimaryKeyElementExtendGenerated elementGenerator = new DeleteByPrimaryKeyElementExtendGenerated();
+        elementGenerator.setWhereColumns(additionColumns);
+        elementGenerator.setContext(context);
+        elementGenerator.setIntrospectedTable(introspectedTable);
+        elementGenerator.addElements(element);
         return super.sqlMapDeleteByPrimaryKeyElementGenerated(element, introspectedTable);
     }
 
@@ -121,14 +119,12 @@ public class MybatisExtendPlugin extends PluginAdapter {
 
     @Override
     public boolean sqlMapSelectByPrimaryKeyElementGenerated(XmlElement element, IntrospectedTable introspectedTable) {
-        if(additionColumns.size() > 0){
-            SelectByPrimaryKeyElementExtendGenerated elementGenerator = new SelectByPrimaryKeyElementExtendGenerated();
-            elementGenerator.setWhereColumns(additionColumns);
-            elementGenerator.setLogicDeleteColumn(logicDeleteColumn);
-            elementGenerator.setContext(context);
-            elementGenerator.setIntrospectedTable(introspectedTable);
-            elementGenerator.addElements(element);
-        }
+        SelectByPrimaryKeyElementExtendGenerated elementGenerator = new SelectByPrimaryKeyElementExtendGenerated();
+        elementGenerator.setWhereColumns(additionColumns);
+        elementGenerator.setLogicDeleteColumn(logicDeleteColumn);
+        elementGenerator.setContext(context);
+        elementGenerator.setIntrospectedTable(introspectedTable);
+        elementGenerator.addElements(element);
         return super.sqlMapSelectByPrimaryKeyElementGenerated(element, introspectedTable);
     }
 
@@ -144,14 +140,12 @@ public class MybatisExtendPlugin extends PluginAdapter {
 
     @Override
     public boolean sqlMapUpdateByPrimaryKeySelectiveElementGenerated(XmlElement element, IntrospectedTable introspectedTable) {
-        if(additionColumns.size() > 0){
-            UpdateByPrimaryKeySelectiveElementExtendGenerated elementGenerator = new UpdateByPrimaryKeySelectiveElementExtendGenerated();
-            elementGenerator.setWhereColumns(additionColumns);
-            elementGenerator.setExcludeUpdateColumns(excludeUpdateColumns);
-            elementGenerator.setContext(context);
-            elementGenerator.setIntrospectedTable(introspectedTable);
-            elementGenerator.addElements(element);
-        }
+        UpdateByPrimaryKeySelectiveElementExtendGenerated elementGenerator = new UpdateByPrimaryKeySelectiveElementExtendGenerated();
+        elementGenerator.setWhereColumns(additionColumns);
+        elementGenerator.setExcludeUpdateColumns(excludeUpdateColumns);
+        elementGenerator.setContext(context);
+        elementGenerator.setIntrospectedTable(introspectedTable);
+        elementGenerator.addElements(element);
         return super.sqlMapUpdateByPrimaryKeySelectiveElementGenerated(element, introspectedTable);
     }
 
@@ -168,14 +162,12 @@ public class MybatisExtendPlugin extends PluginAdapter {
 
     @Override
     public boolean sqlMapUpdateByPrimaryKeyWithBLOBsElementGenerated(XmlElement element, IntrospectedTable introspectedTable) {
-        if(additionColumns.size() > 0){
-            UpdateByPrimaryKeyWithBLOBsElementExtendGenerated elementGenerator = new UpdateByPrimaryKeyWithBLOBsElementExtendGenerated();
-            elementGenerator.setWhereColumns(additionColumns);
-            elementGenerator.setExcludeUpdateColumns(excludeUpdateColumns);
-            elementGenerator.setContext(context);
-            elementGenerator.setIntrospectedTable(introspectedTable);
-            elementGenerator.addElements(element);
-        }
+        UpdateByPrimaryKeyWithBLOBsElementExtendGenerated elementGenerator = new UpdateByPrimaryKeyWithBLOBsElementExtendGenerated();
+        elementGenerator.setWhereColumns(additionColumns);
+        elementGenerator.setExcludeUpdateColumns(excludeUpdateColumns);
+        elementGenerator.setContext(context);
+        elementGenerator.setIntrospectedTable(introspectedTable);
+        elementGenerator.addElements(element);
         return super.sqlMapUpdateByPrimaryKeyWithBLOBsElementGenerated(element, introspectedTable);
     }
 
@@ -192,14 +184,12 @@ public class MybatisExtendPlugin extends PluginAdapter {
 
     @Override
     public boolean sqlMapUpdateByPrimaryKeyWithoutBLOBsElementGenerated(XmlElement element, IntrospectedTable introspectedTable) {
-        if(additionColumns.size() > 0){
-            UpdateByPrimaryKeyWithoutBLOBsElementExtendGenerated elementGenerator = new UpdateByPrimaryKeyWithoutBLOBsElementExtendGenerated(true);
-            elementGenerator.setWhereColumns(additionColumns);
-            elementGenerator.setExcludeUpdateColumns(excludeUpdateColumns);
-            elementGenerator.setContext(context);
-            elementGenerator.setIntrospectedTable(introspectedTable);
-            elementGenerator.addElements(element);
-        }
+        UpdateByPrimaryKeyWithoutBLOBsElementExtendGenerated elementGenerator = new UpdateByPrimaryKeyWithoutBLOBsElementExtendGenerated(true);
+        elementGenerator.setWhereColumns(additionColumns);
+        elementGenerator.setExcludeUpdateColumns(excludeUpdateColumns);
+        elementGenerator.setContext(context);
+        elementGenerator.setIntrospectedTable(introspectedTable);
+        elementGenerator.addElements(element);
         return super.sqlMapUpdateByPrimaryKeyWithoutBLOBsElementGenerated(element, introspectedTable);
     }
 

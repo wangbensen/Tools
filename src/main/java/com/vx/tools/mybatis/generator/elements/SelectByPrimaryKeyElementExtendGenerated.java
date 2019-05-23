@@ -1,5 +1,6 @@
 package com.vx.tools.mybatis.generator.elements;
 
+import org.apache.commons.lang3.StringUtils;
 import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.dom.xml.Attribute;
 import org.mybatis.generator.api.dom.xml.Element;
@@ -77,13 +78,17 @@ public class SelectByPrimaryKeyElementExtendGenerated extends AbstractXmlElement
         }
 
         //逻辑删除字段
-        elements.add(new TextElement(" and " + logicDeleteColumn + " = 1 "));
+        if(StringUtils.isNotBlank(logicDeleteColumn)){
+            elements.add(new TextElement(" and " + logicDeleteColumn + " = 1 "));
+        }
 
         //添加where附加条件
-        for (IntrospectedColumn introspectedColumn : ListUtilities.removeGeneratedAlwaysColumns(introspectedTable.getNonPrimaryKeyColumns())) {
-            String escapedColumnName = MyBatis3FormattingUtilities.getEscapedColumnName(introspectedColumn);
-            if(whereColumns.contains(escapedColumnName)){
-                elements.add(new TextElement("and " + escapedColumnName + " = " + MyBatis3FormattingUtilities.getParameterClause(introspectedColumn)));
+        if(whereColumns.size() > 0){
+            for (IntrospectedColumn introspectedColumn : ListUtilities.removeGeneratedAlwaysColumns(introspectedTable.getNonPrimaryKeyColumns())) {
+                String escapedColumnName = MyBatis3FormattingUtilities.getEscapedColumnName(introspectedColumn);
+                if(whereColumns.contains(escapedColumnName)){
+                    elements.add(new TextElement("and " + escapedColumnName + " = " + MyBatis3FormattingUtilities.getParameterClause(introspectedColumn)));
+                }
             }
         }
     }

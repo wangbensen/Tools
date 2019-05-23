@@ -35,6 +35,8 @@ public class UpdateByPrimaryKeyWithoutBLOBsElementExtendGenerated extends Abstra
 
     @Override
     public void addElements(XmlElement parentElement) {
+        boolean isHasAdditionColumns = whereColumns.size() > 0;
+
         //重新生成attribute
         List<Attribute> attributes = parentElement.getAttributes();
         attributes.clear();
@@ -65,7 +67,7 @@ public class UpdateByPrimaryKeyWithoutBLOBsElementExtendGenerated extends Abstra
             }
             sb.append(escapedColumnName);
             sb.append(" = ");
-            sb.append(MyBatis3FormattingUtilities.getParameterClause(introspectedColumn, "record."));
+            sb.append(MyBatis3FormattingUtilities.getParameterClause(introspectedColumn, isHasAdditionColumns ? "record." : ""));
 
             if (iter.hasNext()) {
                 sb.append(',');
@@ -96,15 +98,17 @@ public class UpdateByPrimaryKeyWithoutBLOBsElementExtendGenerated extends Abstra
 
             sb.append(escapedColumnName);
             sb.append(" = ");
-            sb.append(MyBatis3FormattingUtilities.getParameterClause(introspectedColumn, "record."));
+            sb.append(MyBatis3FormattingUtilities.getParameterClause(introspectedColumn, isHasAdditionColumns ? "record." : ""));
             elements.add(new TextElement(sb.toString()));
         }
 
         //添加where附加条件
-        for (IntrospectedColumn introspectedColumn : ListUtilities.removeGeneratedAlwaysColumns(introspectedTable.getNonPrimaryKeyColumns())) {
-            String escapedColumnName = MyBatis3FormattingUtilities.getEscapedColumnName(introspectedColumn);
-            if(whereColumns.contains(escapedColumnName)){
-                elements.add(new TextElement("and " + escapedColumnName + " = " + MyBatis3FormattingUtilities.getParameterClause(introspectedColumn)));
+        if(isHasAdditionColumns){
+            for (IntrospectedColumn introspectedColumn : ListUtilities.removeGeneratedAlwaysColumns(introspectedTable.getNonPrimaryKeyColumns())) {
+                String escapedColumnName = MyBatis3FormattingUtilities.getEscapedColumnName(introspectedColumn);
+                if(whereColumns.contains(escapedColumnName)){
+                    elements.add(new TextElement("and " + escapedColumnName + " = " + MyBatis3FormattingUtilities.getParameterClause(introspectedColumn)));
+                }
             }
         }
     }

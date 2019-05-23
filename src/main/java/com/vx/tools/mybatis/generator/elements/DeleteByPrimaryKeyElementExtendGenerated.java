@@ -50,10 +50,12 @@ public class DeleteByPrimaryKeyElementExtendGenerated extends AbstractXmlElement
         }
 
         //添加where附加条件
-        for (IntrospectedColumn introspectedColumn : ListUtilities.removeGeneratedAlwaysColumns(introspectedTable.getNonPrimaryKeyColumns())) {
-            String escapedColumnName = MyBatis3FormattingUtilities.getEscapedColumnName(introspectedColumn);
-            if(whereColumns.contains(escapedColumnName)){
-                elements.add(new TextElement("and " + escapedColumnName + " = " + MyBatis3FormattingUtilities.getParameterClause(introspectedColumn)));
+        if(whereColumns.size() > 0){
+            for (IntrospectedColumn introspectedColumn : ListUtilities.removeGeneratedAlwaysColumns(introspectedTable.getNonPrimaryKeyColumns())) {
+                String escapedColumnName = MyBatis3FormattingUtilities.getEscapedColumnName(introspectedColumn);
+                if(whereColumns.contains(escapedColumnName)){
+                    elements.add(new TextElement("and " + escapedColumnName + " = " + MyBatis3FormattingUtilities.getParameterClause(introspectedColumn)));
+                }
             }
         }
     }
